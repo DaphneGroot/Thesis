@@ -1,0 +1,236 @@
+---
+title: "Scriptie"
+author: "Daphne Groot"
+date: "17-05-2017"
+output: html_document
+---
+
+
+## 1. Load data
+Read in from SPSS
+
+```{r load}
+library(foreign)
+library(car)
+mydataPerMonth = read.spss("./pronouns_per_month_5.sav", to.data.frame=TRUE)
+
+date  <- mydataPerMonth$DateYearDateMonth
+FPS   <- mydataPerMonth$FPS
+FPP   <- mydataPerMonth$FPP
+SP    <- mydataPerMonth$SP
+TPS   <- mydataPerMonth$TPS
+TPP   <- mydataPerMonth$TPP
+
+```
+
+## 2. Mann-Whitney U per maand FPS
+
+```{r codeFPS}
+
+try1 <- aggregate(FPS,list(date), mean) #calculate mean for every date
+#try1
+
+current_index = 2
+for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding FPS's
+  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+    previous_index = current_index - 1
+    
+    current_date = which(date == try1$Group.1[current_index]) #Get index of current date
+    previous_date = which(date == try1$Group.1[previous_index]) #Get index of previous date
+    
+    vector_current <- c()
+    vector_previous <- c()
+    
+    for (n in current_date){ 
+      vector_current <- c(vector_current,FPS[n])#append number which belongs to the current date to the vector
+    }
+    for (n in previous_date){
+      vector_previous <- c(vector_previous,FPS[n])#append number which belongs to the previous date to the vector
+    }
+    
+    test <- wilcox.test(vector_previous,vector_current, exact = FALSE)$p.value #Mann-Whitney U because data not normally distributed
+    
+    current_date_date <- toString(try1$Group.1[current_index]) #make string out of date
+    previous_date_date <- toString(try1$Group.1[previous_index])
+    
+    if (test <= 0.05){#if p-value is significant
+      cat("\nSIG\nCurrent_date", current_date_date,"\tPrevious_date", previous_date_date,"\tMWU p-value", test,"\n\n")
+    }
+    else {
+      cat("Current_date", current_date_date,"\tPrevious_date", previous_date_date,"\tMWU p-value", test,"\n")
+    }
+    current_index = current_index + 1 #increase index so the next month will be taken
+  }
+}
+
+```
+
+## 3. Mann-Whitney U per maand FPP
+
+```{r codeFPP}
+
+try1 <- aggregate(FPP,list(date), mean)
+#try1
+
+current_index = 2
+for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding FPP's
+  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+    previous_index = current_index - 1
+    
+    current_date = which(date == try1$Group.1[current_index])
+    previous_date = which(date == try1$Group.1[previous_index])
+    
+    vector_current <- c()
+    vector_previous <- c()
+    
+    for (n in current_date){ 
+      vector_current <- c(vector_current,FPP[n])
+    }
+    for (n in previous_date){
+      vector_previous <- c(vector_previous,FPP[n])
+    }
+    
+    test <- wilcox.test(vector_previous,vector_current, exact = FALSE)$p.value#data not normally distributed
+    
+    current_date_date <- toString(try1$Group.1[current_index])
+    previous_date_date <- toString(try1$Group.1[previous_index])
+    
+    if (test <= 0.05){
+      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n\n")
+    }
+    else {
+      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n")
+    }
+    current_index = current_index + 1
+  }
+}
+
+```
+
+## 4. Mann-Whitney U per maand SP
+
+```{r codeSP}
+
+try1 <- aggregate(SP,list(date), mean)
+#try1
+
+current_index = 2
+for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding FPP's
+  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+    previous_index = current_index - 1
+    
+    current_date = which(date == try1$Group.1[current_index])
+    previous_date = which(date == try1$Group.1[previous_index])
+    
+    vector_current <- c()
+    vector_previous <- c()
+    
+    for (n in current_date){ 
+      vector_current <- c(vector_current,SP[n])
+    }
+    for (n in previous_date){
+      vector_previous <- c(vector_previous,SP[n])
+    }
+    
+    test <- wilcox.test(vector_previous,vector_current, exact = FALSE)$p.value#data not normally distributed
+    
+    current_date_date <- toString(try1$Group.1[current_index])
+    previous_date_date <- toString(try1$Group.1[previous_index])
+    
+    if (test <= 0.05){
+      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n\n")
+    }
+    else {
+      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n")
+    }
+    current_index = current_index + 1
+  }
+}
+
+```
+
+## 5. Mann-Whitney U per maand TPS
+
+```{r codeTPS}
+
+try1 <- aggregate(TPS,list(date), mean)
+#try1
+
+current_index = 2
+for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding FPP's
+  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+    previous_index = current_index - 1
+    
+    current_date = which(date == try1$Group.1[current_index]) #needed to get index numbers
+    previous_date = which(date == try1$Group.1[previous_index])
+    
+    vector_current <- c() #empty vectors for every item
+    vector_previous <- c()
+    
+    for (n in current_date){ 
+      vector_current <- c(vector_current,TPS[n]) #append number to empty vector
+    }
+    for (n in previous_date){
+      vector_previous <- c(vector_previous,TPS[n])
+    }
+    
+    mean_current <- round(mean(vector_current),digits=2) #only needed for checking
+    mean_previous <- round(mean(vector_previous),digits=2)
+    
+    test <- wilcox.test(vector_previous, vector_current, exact = FALSE)$p.value #data not normally distributed
+    
+    current_date_date <- toString(try1$Group.1[current_index]) #needed so cat() will print the actual date
+    previous_date_date <- toString(try1$Group.1[previous_index])
+    
+    #print outcome and if significant or not
+    if (test <= 0.05){
+      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test, "------- MC", mean_current,"MP",mean_previous,"\n\n")
+    }
+    else {
+      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test, "------- MC", mean_current,"MP",mean_previous,"\n")
+    }
+    current_index = current_index + 1 #higher current (and thus previous index)
+  }
+}
+```
+
+## 6. Mann-Whitney U per maand TPP
+```{r codeTPP}
+
+try1 <- aggregate(TPP,list(date), mean)
+#try1
+
+current_index = 2
+for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding FPP's
+  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+    previous_index = current_index - 1
+    
+    current_date = which(date == try1$Group.1[current_index])
+    previous_date = which(date == try1$Group.1[previous_index])
+    
+    vector_current <- c()
+    vector_previous <- c()
+    
+    for (n in current_date){ 
+      vector_current <- c(vector_current,TPP[n])
+    }
+    for (n in previous_date){
+      vector_previous <- c(vector_previous,TPP[n])
+    }
+    
+    test <- wilcox.test(vector_previous,vector_current, exact = FALSE, correct=FALSE)$p.value#data not normally distributed
+    
+    current_date_date <- toString(try1$Group.1[current_index])
+    previous_date_date <- toString(try1$Group.1[previous_index])
+    
+    if (test <= 0.05){
+      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n\n")
+    }
+    else {
+      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n")
+    }
+    current_index = current_index + 1
+  }
+}
+
+```
