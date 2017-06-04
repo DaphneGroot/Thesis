@@ -1,7 +1,7 @@
 ---
 title: "StatisticalDifference_ApprovalDisapproval"
 author: "Daphne Groot"
-date: "31 mei 2017"
+date: "04 juni 2017"
 output: html_document
 ---
 
@@ -23,86 +23,72 @@ Disapproval   <- mydata$Disapproval
 
 ```
 
-## 2. Approval per maand
+## 2. (Dis)Approval per month function
 
-```{r codeApproval}
+```{r function}
 
-try1 <- aggregate(Approval,list(Date), mean) #calculate mean for every date
-#try1
-
-current_index = 2 #make it 2 so that the first combination is between February-January
-
-for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding approval rates
-  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
-    previous_index = current_index - 1
-    
-    current_date = which(Date == try1$Group.1[current_index]) #Get index of currenth date
-    previous_date = which(Date == try1$Group.1[previous_index]) #Get index of previous month
-    
-    vector_current <- c()
-    vector_previous <- c()
-    
-    for (n in current_date){ 
-      vector_current <- c(vector_current,Approval[n]) #append number which belongs to the current date to the vector
+function.ratings <- function(arg1)
+{
+  try1 <- aggregate(arg1,list(Date), mean) #calculate mean for every date
+  #try1
+  
+  current_index = 2 #make it 2 so that the first combination is between February-January
+  
+  for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding arg1 rates
+    while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
+      previous_index = current_index - 1
+      
+      current_date = which(Date == try1$Group.1[current_index]) #Get index of currenth date
+      previous_date = which(Date == try1$Group.1[previous_index]) #Get index of previous month
+      
+      vector_current <- c()
+      vector_previous <- c()
+      
+      for (n in current_date){ 
+        vector_current <- c(vector_current,arg1[n]) #append number which belongs to the current date to the vector
+      }
+      for (n in previous_date){
+        vector_previous <- c(vector_previous,arg1[n]) #append number which belongs to the previous date to the vector
+      }
+      
+      
+      current_date_date <- toString(try1$Group.1[current_index]) #make string out of date
+      previous_date_date <- toString(try1$Group.1[previous_index])
+      
+      #if-else loop to check if mean is smaller or bigger than previous mean. Use this to determine 'alternative'
+     if (mean(vector_previous) < mean(vector_current)){
+      test <- wilcox.test(vector_previous,vector_current, exact = FALSE, alternative = "less")$p.value #Mann-Whitney U because data not normally distributed
+      
+      if (test <= 0.05){#if p-value is significant
+        cat(current_date_date, previous_date_date,"\t", test,"\n")
+      }
+      
+     }
+      
+    else{
+      test <- wilcox.test(vector_previous,vector_current, exact = FALSE, alternative = "greater")$p.value #Mann-Whitney U because data not normally distributed
+      
+      if (test <= 0.05){#if p-value is significant
+        cat(current_date_date, previous_date_date,"\t", test,"\n")
+      }
+      
+      
     }
-    for (n in previous_date){
-      vector_previous <- c(vector_previous,Approval[n]) #append number which belongs to the previous date to the vector
+      
+      current_index = current_index + 1 #increase index so the next month will be taken
     }
-    
-    test <- wilcox.test(vector_previous,vector_current, exact = FALSE)$p.value #Mann-Whitney U because data not normally distributed
-    
-    current_date_date <- toString(try1$Group.1[current_index]) #make string out of date
-    previous_date_date <- toString(try1$Group.1[previous_index])
-    
-    if (test <= 0.05){ #if p-value is significant
-      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n\n")
-    }
-    else {
-      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n")
-    }
-    current_index = current_index + 1 #increase index so the next month will be taken
   }
 }
 ```
 
-## 2. Disapproval U per maand
+## 2. Approval per month 
 
-```{r codeDisapproval}
+```{r Approval}
+function.ratings(Approval)
+```
 
-try1 <- aggregate(Disapproval,list(Date), mean) #calculate mean for every date
-#try1
+## 2. Disapproval per month
 
-current_index = 2 #make it 2 so that the first combination is between February-January
-
-for (i in try1$Group.1){ #for all dates, get the indexes of the corresponding disapproval rates
-  while (current_index < 98) {#there are only 12 months in one year --> 97 in all the years
-    previous_index = current_index - 1
-    
-    current_date = which(Date == try1$Group.1[current_index]) #Get index of currenth date
-    previous_date = which(Date == try1$Group.1[previous_index]) #Get index of previous date
-    
-    vector_current <- c()
-    vector_previous <- c()
-    
-    for (n in current_date){ 
-      vector_current <- c(vector_current,Disapproval[n]) #append number which belongs to the current date to the vector
-    }
-    for (n in previous_date){
-      vector_previous <- c(vector_previous,Disapproval[n]) #append number which belongs to the previous date to the vector
-    }
-    
-    test <- wilcox.test(vector_previous,vector_current, exact = FALSE)$p.value #Mann-Whitney U because data not normally distributed
-    
-    current_date_date <- toString(try1$Group.1[current_index]) #make string out of date
-    previous_date_date <- toString(try1$Group.1[previous_index])
-    
-    if (test <= 0.05){ #if p-value is significant
-      cat("\nSIG\nCurrent_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n\n")
-    }
-    else {
-      cat("Current_date", current_date_date,"Previous_date", previous_date_date,"MWU p-value", test,"\n")
-    }
-    current_index = current_index + 1 #increase index so the next month will be taken
-  }
-}
+```{r Disapproval}
+function.ratings(Disapproval)
 ```
